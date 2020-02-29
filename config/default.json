@@ -1,0 +1,3 @@
+{
+  "mongoURI": "mongodb+srv://vimal:vimal@cluster0-wvfqo.gcp.mongodb.net/test?retryWrites=true&w=majority"
+}
