@@ -7,7 +7,9 @@ module.exports = async () => {
     // await mongoose.connect(uri, {
     await mongoose.connect("mongodb://127.0.0.1/test", {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      // Get rid of deprecation warning
+      useCreateIndex: true
     });
     console.log("MongoDB connected");
   } catch (err) {

@@ -1,0 +1,6 @@
+// Register User
+curl -i 127.0.0.1:5000/api/users -H "Content-Type:application/json" -d '{"name":"Vimal","email":"abc@bcd.cde","password":"232323"}'
+
+
+// Auth
+curl 127.0.0.1:5000/api/auth -H "Content-Type:application/json" -H "x-auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWU1ZTEzYWYwMGE4ODIxOWYwNmJlOTVkIn0sImlhdCI6MTU4MzIyMzcyNywiZXhwIjoxNTgzMjU5NzI3fQ.taW4NV3nQJfMalgSb35NHBa7T1CQ93XFfOp_SjP5SLU"

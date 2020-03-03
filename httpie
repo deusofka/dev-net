@@ -1,0 +1,8 @@
+// Register User
+ http -v POST 127.0.0.1:5000/api/users name=Vimal email=abc@def.ghi password=1234
+
+
+// Auth
+HTTP GET 127.0.0.1:5000/api/auth x-auth-token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWU1ZTEzYWYwMGE4ODIxOWYwNmJlOTVkIn0sImlhdCI6MTU4MzIyMzcyNywiZXhwIjoxNTgzMjU5NzI3fQ.taW4NV3nQJfMalgSb35NHBa7T1CQ93XFfOp_SjP5SLU
+
+
