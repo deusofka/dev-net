@@ -4,8 +4,10 @@ const { check, validationResult } = require("express-validator");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Profile = require("../../models/Profile");
 const User = require("../../models/User");
 const secret = require("config").get("jwtSecret");
+const auth = require("../../middleware/auth");
 
 // @route POST api/users
 // @desc Register user
@@ -25,24 +27,20 @@ router.post(
     ).isLength({ min: 6 })
   ],
   async (req, res) => {
-    console.log(req.body);
     // 1. Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.errors });
     }
-    console.log("Valid input!");
     const { name, email, password } = req.body;
     try {
       let user = await User.findOne({ email });
-      console.log("User from the database: ", user);
       // 2. See if the user does not already exist
       if (user) {
         return res
           .status(400)
           .json({ errors: [{ msg: "User already registered!" }] });
       }
-      console.log("User doesn't already exist");
       // 3. Get users gravatar
       // size, rating, default (mp: mystery person)
       const avatar = gravatar.url(email, { s: 200, r: "pg", d: "mp" });
@@ -58,15 +56,15 @@ router.post(
         payload,
         secret,
         {
-          expiresIn: 36000
+          expiresIn: 3600
         }
       );
       return res.json({ token });
-      console.log(token);
-    } catch (err) {
-      console.error("Error message: " + err.message);
+    } catch (e) {
+      console.error("Error message: " + e.message);
       res.status(500).send("Server Error");
     }
   }
 );
+
 module.exports = router;

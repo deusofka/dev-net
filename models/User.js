@@ -13,17 +13,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-/* Shorthand for:
+  /* Shorthand for:
 
     avatar: {
       type: String
     }
 */
-  avatar: String, 
+  avatar: String,
   date: {
     type: Date,
     default: Date.now
   }
 });
-// Two arguments: 
+// Two arguments:
 module.exports = mongoose.model("User", userSchema);
