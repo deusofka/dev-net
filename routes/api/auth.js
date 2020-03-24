@@ -9,7 +9,7 @@ const secret = require("config").get("jwtSecret");
 
 // Call middleware to test if valid token before accessing the protected route
 // @route GET api/auth
-// @desc Protected route
+// @desc Check if user is logged in
 // @access Public
 router.get("/", auth, async (req, res) => {
   // Get user from User model
