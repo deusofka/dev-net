@@ -7,9 +7,17 @@ import { logout } from "../../actions/auth";
 const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
   const authLinks = (
     <ul>
-      <li>
+        <li>
+          <Link to="/dashboard">
+            <i className="fas fa-user"></i>
+            {" " /* Put a space at the end */}
+            <span className="hide-sm">Dashboard</span>
+          </Link>
+        </li>
+        <li>
+
         {/* #! means go nowhere */}
-        <a onClick={logout} href="/#!">
+        <a onClick={logout} href="#!">
           <i className="fas fa-sign-out-alt"></i>
           {" " /* Put a space at the end */}
           <span className="hide-sm">Logout</span>
@@ -20,7 +28,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
   const guestLinks = (
     <ul>
       <li>
-        <a href="/#!">Developers</a>
+        <a href="#!">Developers</a>
       </li>
       <li>
         <Link to="/register">Register</Link>

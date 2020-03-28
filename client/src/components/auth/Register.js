@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import {getCurrentProfile} from "../../actions/profile";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
 import { auth } from "../../actions/auth";
