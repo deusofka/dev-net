@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const Profile = require("../../models/Profile");
+const User = require("../../models/User");
+const Post = require("../../models/Post");
 const { check, validationResult } = require("express-validator/check");
 
 // @route GET api/profile
@@ -33,23 +35,35 @@ router.post(
   [
     auth,
     check("status", "Please include a status").notEmpty(),
-    check("skills", "Please include a skills").notEmpty()
+    check("skills", "Please include skills").notEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.errors });
     }
-    const {
+    let {
       company,
       website,
       location,
       status,
       skills,
       bio,
-      githubusername
+      githubusername,
+      twitter,
+      facebook,
+      linkedin,
+      youtube,
+      instagram
     } = req.body;
-    const profile = new Profile({
+    skills = skills.split(",").map(skill => skill.trim());
+    const social = {};
+    social.twitter = twitter;
+    social.facebook = facebook;
+    social.linkedin = linkedin;
+    social.youtube = youtube;
+    social.instagram = instagram;
+    const profile = {
       user: req.user.id,
       company,
       website,
@@ -57,19 +71,13 @@ router.post(
       status,
       skills,
       bio,
-      githubusername
-    });
-    const profileFromDb = await Profile.findOne({ user: req.user.id }).populate(
-      "user",
-      "name avatar"
-    );
-    if (profileFromDb) {
-      return res
-        .status(403)
-        .json({ errors: [{ msg: "Profile already exists!" }] });
-    }
+      githubusername,
+      social
+    };
     try {
-      await profile.save();
+      await Profile.updateOne({ user: req.user.id }, profile, {
+        upsert: true
+      });
       res.json(
         await Profile.findOne({ user: req.user.id }).populate(
           "user",
@@ -83,59 +91,16 @@ router.post(
   }
 );
 
-// @route PUT api/profile
-// @desc update profile
-// @access Private
-router.put("/", auth, async (req, res) => {
-  const {
-    company,
-    website,
-    location,
-    status,
-    skills,
-    bio,
-    githubusername
-  } = req.body;
-  const profileFields = {};
-  if (company) profileFields.company = company;
-  if (website) profileFields.website = website;
-  if (location) profileFields.location = location;
-  if (status) profileFields.status = status;
-  if (skills) profileFields.skills = skills;
-  if (bio) profileFields.bio = bio;
-  if (githubusername) profileFields.githubusername = githubusername;
-  console.log({ payload: JSON.stringify(profileFields) });
-  try {
-    const updated = await Profile.updateOne(
-      { user: req.user.id },
-      {
-        $set: profileFields
-      }
-    );
-    console.log({ updated });
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      "user",
-      "name avatar"
-    );
-    if (!profile) {
-      return res
-        .status(404)
-        .json({ errors: [{ msg: "Profile does not exist" }] });
-    }
-    res.json(profile);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send("Server Error");
-  }
-});
-
 // @route DELETE api/profile/
 // @desc delete current profile and the associated user
 // @access Private
 router.delete("/", auth, async (req, res) => {
   try {
-    console.log(req.user.id);
-    const profile = await Profile.findOneAndDelete({ user: req.user.id });
+    // Remove posts
+    await Post.deleteMany({user: req.user.id});
+    // Remove profile
+    await Profile.findOneAndDelete({ user: req.user.id });
+    // Remove user
     const user = await User.findByIdAndDelete(req.user.id)
       .select("-__v")
       .select("-password");
@@ -203,7 +168,7 @@ router.post(
       }
       profile.experience.unshift(experience);
       await profile.save();
-      res.json(profile.experience[0]);
+      res.json(profile);
     } catch (e) {
       console.log(e);
       res.status(500).send("Server error");
@@ -287,7 +252,8 @@ router.delete("/experience/:id", auth, async (req, res) => {
         errors: [{ msg: "Experience matching the id does not exist" }]
       });
     } else {
-      res.json(profile.experience.splice(index, 1));
+      profile.experience.splice(index, 1);
+      res.json(profile);
       await profile.save();
     }
   } catch (e) {
@@ -348,7 +314,7 @@ router.post(
       }
       profile.education.unshift(education);
       await profile.save();
-      res.json(profile.education[0]);
+      res.json(profile);
     } catch (e) {
       console.log(e);
       res.status(500).send("Server error");
@@ -434,7 +400,8 @@ router.delete("/education/:id", auth, async (req, res) => {
         errors: [{ msg: "Education matching the id does not exist" }]
       });
     } else {
-      res.json(profile.education.splice(index, 1));
+      profile.education.splice(index, 1);
+      res.json(profile);
       await profile.save();
     }
   } catch (e) {
