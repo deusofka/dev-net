@@ -172,6 +172,10 @@ img {
   color: #333;
 }
 
+.on > i {
+  color: var(--primary-color);
+}
+
 .btn-dark,
 .bg-dark,
 .badge-dark,

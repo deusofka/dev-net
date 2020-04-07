@@ -1,10 +1,10 @@
 import React, { Fragment, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { addExperience } from "../../actions/profile";
 
-const AddExperience = ({addExperience, history}) => {
+const AddExperience = ({ addExperience, history }) => {
   const [formData, setFormData] = useState({
     company: "",
     title: "",
@@ -12,12 +12,12 @@ const AddExperience = ({addExperience, history}) => {
     from: "",
     to: "",
     current: false,
-    description: ""
+    description: "",
   });
 
   const [toDateDisabled, toggleDisabled] = useState(false);
 
-  const onChange = e =>
+  const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const { company, title, location, from, to, current, description } = formData;
@@ -29,17 +29,20 @@ const AddExperience = ({addExperience, history}) => {
         positions that you have had in the past
       </p>
       <small>* = required field</small>
-      <form className="form" onSubmit={e=> {
-        e.preventDefault();
-        addExperience(formData, history);
-      }}>
+      <form
+        className="form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addExperience(formData, history);
+        }}
+      >
         <div className="form-group">
           <input
             type="text"
             placeholder="* Job Title"
             name="title"
             value={title}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             required
           />
         </div>
@@ -49,7 +52,7 @@ const AddExperience = ({addExperience, history}) => {
             placeholder="* Company"
             name="company"
             value={company}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             required
           />
         </div>
@@ -59,7 +62,7 @@ const AddExperience = ({addExperience, history}) => {
             placeholder="Location"
             name="location"
             value={location}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
           />
         </div>
         <div className="form-group">
@@ -68,7 +71,7 @@ const AddExperience = ({addExperience, history}) => {
             type="date"
             name="from"
             value={from}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
           />
         </div>
         <div className="form-group">
@@ -77,7 +80,7 @@ const AddExperience = ({addExperience, history}) => {
               type="checkbox"
               name="current"
               value={current}
-              onChange={e => {
+              onChange={(e) => {
                 setFormData({ ...formData, current: !current });
                 toggleDisabled(!toDateDisabled);
               }}
@@ -91,7 +94,7 @@ const AddExperience = ({addExperience, history}) => {
             type="date"
             name="to"
             value={to}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             disabled={toDateDisabled ? true : false}
           />
         </div>
@@ -99,14 +102,14 @@ const AddExperience = ({addExperience, history}) => {
           <textarea
             name="description"
             value={description}
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             cols="30"
             rows="5"
             placeholder="Job Description"
           ></textarea>
         </div>
         <input type="submit" className="btn btn-primary my-1" />
-        <a className="btn btn-light my-1" href="dashboard.html">
+        <a className="btn btn-light my-1" href="dashboard">
           Go Back
         </a>
       </form>
@@ -115,7 +118,7 @@ const AddExperience = ({addExperience, history}) => {
 };
 
 AddExperience.propTypes = {
-  addExperience: PropTypes.func.isRequired
+  addExperience: PropTypes.func.isRequired,
 };
 
 export default connect(null, { addExperience })(withRouter(AddExperience));

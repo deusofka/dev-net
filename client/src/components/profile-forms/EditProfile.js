@@ -33,7 +33,7 @@ const EditProfile = ({
     // Fill up the form automatically from profile state
     if (!loading && profile) {
       console.log({ profile });
-      const newFormData = {...initialFormData};
+      const newFormData = { ...initialFormData };
       for (const key in profile) {
         console.log(key, newFormData.hasOwnProperty(key), profile[key]);
         if (newFormData.hasOwnProperty(key)) newFormData[key] = profile[key];
@@ -46,7 +46,7 @@ const EditProfile = ({
       setFormData(newFormData);
     }
     // Only call useEffect when the value of loading changes as opposed to for every render
-  }, [loading]);
+  }, [loading, profile, getCurrentProfile]);
 
   const {
     company,

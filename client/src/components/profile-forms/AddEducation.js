@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { addEducation } from "../../actions/profile";
@@ -20,12 +20,21 @@ const AddEducation = ({ addEducation, history }) => {
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const { school, degree, fieldofstudy, from, to, current, description } = formData;
+  const {
+    school,
+    degree,
+    fieldofstudy,
+    from,
+    to,
+    current,
+    description
+  } = formData;
   return (
     <Fragment>
       <h1 className="large text-primary">Add Education</h1>
       <p className="lead">
-        <i className="fas fa-code-branch"></i> Add any school/bootcamp that you have attended
+        <i className="fas fa-code-branch"></i> Add any school/bootcamp that you
+        have attended
       </p>
       <small>* = required field</small>
       <form
@@ -108,7 +117,7 @@ const AddEducation = ({ addEducation, history }) => {
           ></textarea>
         </div>
         <input type="submit" className="btn btn-primary my-1" />
-        <a className="btn btn-light my-1" href="dashboard.html">
+        <a className="btn btn-light my-1" href="dashboard">
           Go Back
         </a>
       </form>

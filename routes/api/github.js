@@ -3,7 +3,7 @@ const router = express.Router();
 const githubToken = require("config").get("githubToken");
 const axios = require("axios");
 
-// @route GET /profile/github
+// @route GET /github/:username
 // @desc get github repos
 // @access Public
 router.get("/:username", async (req, res) => {

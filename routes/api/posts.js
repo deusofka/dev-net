@@ -5,10 +5,38 @@ const { check, validationResult } = require("express-validator");
 const User = require("../../models/User");
 const Post = require("../../models/Post");
 
-// @route GET api/posts
-// @desc Test route
-// @access Public
-router.get("/", (req, res) => res.send("Posts route"));
+// @route    GET api/posts
+// @desc     Get all posts
+// @access   Private
+router.get("/", auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route    GET api/posts/:id
+// @desc     Get post by ID
+// @access   Private
+router.get("/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    // Check for ObjectId format and post
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/) || !post) {
+      return res.status(404).json({ msg: "Post not found" });
+    }
+
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+
+    res.status(500).send("Server Error");
+  }
+});
 
 // @route POST api/posts
 // @desc create a post
@@ -27,7 +55,7 @@ router.post(
         user: req.user.id,
         text: req.body.text,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       });
       res.json(await post.save());
     } catch (e) {
@@ -52,12 +80,12 @@ router.put(
       const post = await Post.findById(req.params.id);
       if (!post) {
         return res.status(404).json({
-          errors: [{ msg: "Post does not exist" }]
+          errors: [{ msg: "Post does not exist" }],
         });
       }
       if (!(String(post.user) === req.user.id)) {
         return res.status(403).json({
-          errors: [{ msg: "Unauthorized: You must be the author" }]
+          errors: [{ msg: "Unauthorized: You must be the author" }],
         });
       }
       const updated = await Post.findByIdAndUpdate(
@@ -74,7 +102,7 @@ router.put(
   }
 );
 
-// @route DELETE api/posts
+// @route DELETE api/posts/:id
 // @desc Delete a post
 // @access Private
 router.delete("/:id", auth, async (req, res) => {
@@ -83,13 +111,13 @@ router.delete("/:id", auth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(404).json({
-        errors: [{ msg: "Post does not exist" }]
+        errors: [{ msg: "Post does not exist" }],
       });
     }
     console.log({ post });
     if (!(String(post.user) === req.user.id)) {
       return res.status(403).json({
-        errors: [{ msg: "Unauthorized: You must be the author" }]
+        errors: [{ msg: "Unauthorized: You must be the author" }],
       });
     }
     const deleted = await Post.findByIdAndDelete(req.params.id);
@@ -108,19 +136,19 @@ router.post("/:id/like", auth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(404).json({
-        errors: [{ msg: "Post does not exist" }]
+        errors: [{ msg: "Post does not exist" }],
       });
     }
     console.log("before", post.likes);
     let liked = false;
-    post.likes.forEach(like => {
+    post.likes.forEach((like) => {
       if (String(like.user) === req.user.id) {
         liked = true;
       }
     });
     if (liked)
-      return res.status(404).json({
-        errors: [{ msg: "You've already liked the post" }]
+      return res.status(409).json({
+        errors: [{ msg: "You've already liked the post" }],
       });
     else post.likes.unshift({ user: req.user.id });
     console.log("after", post.likes);
@@ -140,7 +168,7 @@ router.delete("/:id/like", auth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(404).json({
-        errors: [{ msg: "Post does not exist" }]
+        errors: [{ msg: "Post does not exist" }],
       });
     }
     console.log("before", post.likes);
@@ -151,8 +179,8 @@ router.delete("/:id/like", auth, async (req, res) => {
       }
     });
     if (typeof likeIndex === "undefined") {
-      return res.status(404).json({
-        errors: [{ msg: "You must have liked the post to unlike" }]
+      return res.status(409).json({
+        errors: [{ msg: "You must have liked the post to unlike" }],
       });
     }
     post.likes.splice(likeIndex, 1);
@@ -193,10 +221,11 @@ router.post(
         user: req.user.id,
         text: req.body.text,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       };
       post.comments.push(comment);
-      res.json(await post.save());
+      await post.save();
+      res.json(post.comments);
     } catch (e) {
       console.error(e);
       res.status(500).send("Server error");
@@ -220,12 +249,11 @@ router.delete("/:postId/comments/:commentId", auth, async (req, res) => {
         .status(404)
         .json({ errors: [{ msg: "Post does not exist!" }] });
     }
-    console.log("before", post.comments);
-    post.comments = post.comments.filter(comment =>
+    post.comments = post.comments.filter((comment) =>
       !(req.params.commentId === comment.id) ? true : false
     );
-    console.log("after", post.comments);
-    res.json(await post.save());
+    await post.save();
+    res.json(post.comments);
   } catch (e) {
     console.error(e);
     res.status(500).send("Server error");

@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../../middleware/auth");
-const User = require("../../models/User");
 const Profile = require("../../models/Profile");
-const { check, validationResult } = require("express-validator/check");
 
 // @route GET api/profiles/
 // @desc get all profiles
 // @access Private
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const profiles = await Profile.find({}).populate("user", "name avatar");
     res.json(profiles);
@@ -21,9 +18,12 @@ router.get("/", auth, async (req, res) => {
 // @route GET api/profiles/:id
 // @desc get specific profile
 // @access Private
-router.get("/:id", auth, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const profile = await Profile.findById(req.params.id);
+    const profile = await Profile.findOne({ user: req.params.id }).populate(
+      "user",
+      "name avatar"
+    );
     if (!profile) {
       return res
         .status(404)
